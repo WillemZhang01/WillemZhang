@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TTC Streetcar Stops and Toronto High Schools Map</title>
+  <!-- Include the Google Maps JavaScript API with the visualization library -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZGZIVItEG50B_oUV_4NHtAKelhZRLhAU&libraries=visualization"></script>
+  <script>
+    var map, heatmap;
+    var highSchoolMarkers = [];
+
+    function initMap() {
+      // Center the map on Toronto
+      map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 12,
+        center: { lat: 43.6532, lng: -79.3832 }, // Toronto
+        mapTypeId: 'roadmap'
+      });
+
+      // Coordinates for TTC streetcar stops
+      var streetcarStops = [
+      {location: new google.maps.LatLng(43.592111, -79.5437), weight: 1}, //Long Branch Loop
+{location: new google.maps.LatLng(43.593334, -79.538348), weight: 1}, //Lake Shore Blvd West at Thirty Seventh St
+{location: new google.maps.LatLng(43.594303, -79.53413), weight: 1}, //Lake Shore Blvd West at Long Branch Ave
+{location: new google.maps.LatLng(43.595155, -79.530407), weight: 1}, //Lake Shore Blvd West at Thirty First St
+{location: new google.maps.LatLng(43.595685, -79.527699), weight: 1}, //Lake Shore Blvd West at Twenty Eighth St
+{location: new google.maps.LatLng(43.596328, -79.525043), weight: 1}, //Lake Shore Blvd West at Twenty Seventh St
+{location: new google.maps.LatLng(43.597338, -79.521251), weight: 1}, //Lake Shore Blvd West at Twenty Second St
+{location: new google.maps.LatLng(43.60382, -79.493033), weight: 1}, //Lake Shore Blvd West at Colonel Samuel Smith Park Dr
+{location: new google.maps.LatLng(43.600155, -79.508496), weight: 1}, //Lake Shore Blvd West at Thirteenth St
+{location: new google.maps.LatLng(43.599877, -79.508796), weight: 1}, //Lake Shore Blvd West at Tenth St
+{location: new google.maps.LatLng(43.600638, -79.505392), weight: 1}, //Lake Shore Blvd West at Seventh St
+{location: new google.maps.LatLng(43.601388, -79.502863), weight: 1}, //Lake Shore Blvd West at Fifth St
+{location: new google.maps.LatLng(43.601881, -79.500644), weight: 1}, //Lake Shore Blvd West at Third St
+{location: new google.maps.LatLng(43.60214, -79.498592), weight: 1}, //Lake Shore Blvd West at First St
+{location: new google.maps.LatLng(43.60382, -79.493033), weight: 1}, //Lake Shore Blvd West at Royal York Rd
+{location: new google.maps.LatLng(43.607993, -79.490263), weight: 1}, //Lake Shore Blvd West at Miles Rd
+{location: new google.maps.LatLng(43.610699, -79.489978), weight: 1}, //Lake Shore Blvd West at Norris Cres
+{location: new google.maps.LatLng(43.612353, -79.496884), weight: 1}, //Lake Shore Blvd West at Mimico Ave
+{location: new google.maps.LatLng(43.615096, -79.48869), weight: 1}, //Lake Shore Blvd West at Superior Ave
+{location: new google.maps.LatLng(43.617446, -79.48738), weight: 1}, //Lake Shore Blvd West at Burlington St
+{location: new google.maps.LatLng(43.618786, -79.486469), weight: 1}, //Lake Shore Blvd West at Louisa St
+{location: new google.maps.LatLng(43.620622, -79.483163), weight: 1}, //Lake Shore Blvd West at Legion Rd
+{location: new google.maps.LatLng(43.622602, -79.481558), weight: 1}, //Lake Shore Blvd West at Park Lawn Rd
+{location: new google.maps.LatLng(43.625705, -79.479741), weight: 1}, //2155 Lake Shore Blvd West
+{location: new google.maps.LatLng(43.628942, -79.478392), weight: 1}, //2111 Lake Shore Blvd West
+{location: new google.maps.LatLng(43.631002, -79.47873), weight: 1}, //Humber Loop at the Queensway
+{location: new google.maps.LatLng(43.635656, -79.473392), weight: 1}, //the Queensway at South Kingsway
+{location: new google.maps.LatLng(43.637314, -79.470466), weight: 1}, //the Queensway at Windermere Ave East Side
+{location: new google.maps.LatLng(43.637677, -79.467157), weight: 1}, //the Queensway at Ellis Ave East Side
+{location: new google.maps.LatLng(43.639445, -79.460301), weight: 1}, //the Queensway at Colborne Lodge Dr East Side
+{location: new google.maps.LatLng(43.639665, -79.453923), weight: 1}, //the Queensway at Parkside Dr
+{location: new google.maps.LatLng(43.639553, -79.451838), weight: 1}, //the Queensway at Glendale Ave East Side - St Joseph's Health
+{location: new google.maps.LatLng(43.65348, -79.451258), weight: 1}, //Queen St West at Roncesvalles Ave East Side
+{location: new google.maps.LatLng(43.641174, -79.434064), weight: 1}, //Queen St West at Triller Ave
+{location: new google.maps.LatLng(43.649465, -79.439653), weight: 1}, //Queen St West at Beaty Ave
+{location: new google.maps.LatLng(43.637264, -79.435861), weight: 1}, //Queen St West at Jameson Ave
+{location: new google.maps.LatLng(43.640919, -79.434664), weight: 1}, //Queen St West at Dunn Ave
+{location: new google.maps.LatLng(43.661821, -79.425454), weight: 1}, //Queen St West at Brock Ave
+{location: new google.maps.LatLng(43.649587, -79.431565), weight: 1}, //Queen St West at Dufferin St
+{location: new google.maps.LatLng(43.636511, -79.41471), weight: 1}, //Dufferin Gate Loop
+{location: new google.maps.LatLng(43.637414, -79.426893), weight: 1}, //Dufferin St at Liberty St
+{location: new google.maps.LatLng(43.638781, -79.427202), weight: 1}, //Dufferin St at King St West
+{location: new google.maps.LatLng(43.657218, -79.43441), weight: 1}, //Dufferin St at Melbourne Ave
+{location: new google.maps.LatLng(43.642008, -79.428427), weight: 1}, //Dufferin St at Queen St West
+{location: new google.maps.LatLng(43.641064, -79.417183), weight: 1}, //Queen St West at Sudbury St
+{location: new google.maps.LatLng(43.641451, -79.414528), weight: 1}, //Queen St West at Abell St
+{location: new google.maps.LatLng(43.643394, -79.422528), weight: 1}, //Queen St West at Dovercourt Rd
+{location: new google.maps.LatLng(43.64943, -79.42049), weight: 1}, //Queen St West at Ossington Ave
+{location: new google.maps.LatLng(43.644499, -79.416852), weight: 1}, //Queen St West at Shaw St
+{location: new google.maps.LatLng(43.641936, -79.412095), weight: 1}, //Queen St West at Strachan Ave
+{location: new google.maps.LatLng(43.642987, -79.407539), weight: 1}, //Queen St West at Niagara St
+{location: new google.maps.LatLng(43.643488, -79.405049), weight: 1}, //Queen St West at Tecumseth St
+{location: new google.maps.LatLng(43.644048, -79.402307), weight: 1}, //Queen St West at Bathurst St
+{location: new google.maps.LatLng(43.648153, -79.399534), weight: 1}, //Queen St West at Augusta Ave
+{location: new google.maps.LatLng(43.648886, -79.396062), weight: 1}, //Queen St West at Spadina Ave
+{location: new google.maps.LatLng(43.65097, -79.386257), weight: 1}, //Queen St West at Peter St
+{location: new google.maps.LatLng(43.649947, -79.390954), weight: 1}, //Queen St West at John St
+{location: new google.maps.LatLng(43.66183, -79.392901), weight: 1}, //McCaul St at Stephanie St
+{location: new google.maps.LatLng(43.647822, -79.383403), weight: 1}, //York St at King St West
+{location: new google.maps.LatLng(43.65097, -79.386257), weight: 1}, //Queen St West at University Ave - Osgoode Station
+{location: new google.maps.LatLng(43.646699, -79.382887), weight: 1}, //Queen St West at York St
+{location: new google.maps.LatLng(43.645995, -79.378521), weight: 1}, //Queen St West at Bay St
+{location: new google.maps.LatLng(43.650085, -79.380752), weight: 1}, //Bay St at Adelaide St West
+{location: new google.maps.LatLng(43.64905, -79.378022), weight: 1}, //King St West at Bay St East Side
+{location: new google.maps.LatLng(43.64905, -79.377753), weight: 1}, //King St West at Yonge St East Side - King Station
+{location: new google.maps.LatLng(43.649982, -79.373826), weight: 1}, //Church St at King St East
+{location: new google.maps.LatLng(43.652637, -79.375624), weight: 1}, //Church St at Lombard St North Side
+{location: new google.maps.LatLng(43.653061, -79.375613), weight: 1}, //Church St at Queen St East
+{location: new google.maps.LatLng(43.656947, -79.374706), weight: 1}, //Queen St East at Jarvis St
+{location: new google.maps.LatLng(43.65822, -79.371303), weight: 1}, //Queen St East at Sherbourne St
+{location: new google.maps.LatLng(43.658752, -79.368653), weight: 1}, //Queen St East at Ontario St
+{location: new google.maps.LatLng(43.655473, -79.364679), weight: 1}, //Queen St East at Parliament St
+{location: new google.maps.LatLng(43.657079, -79.35597), weight: 1}, //Queen St East at Sackville St
+{location: new google.maps.LatLng(43.663061, -79.361596), weight: 1}, //Queen St East at Sumach St
+{location: new google.maps.LatLng(43.661284, -79.358), weight: 1}, //Queen St East at River St
+{location: new google.maps.LatLng(43.658422, -79.352103), weight: 1}, //Queen St East at Carroll St
+{location: new google.maps.LatLng(43.658746, -79.35006), weight: 1}, //Queen St East at Broadview Ave
+{location: new google.maps.LatLng(43.662248, -79.351175), weight: 1}, //Broadview Ave at Dundas St East
+{location: new google.maps.LatLng(43.663942, -79.35187), weight: 1}, //Broadview Ave at Mountstephen St
+{location: new google.maps.LatLng(43.66496, -79.355329), weight: 1}, //Gerrard St East at St Matthews Rd
+{location: new google.maps.LatLng(43.658422, -79.352103), weight: 1}, //Queen St East at Saulter St East Side
+{location: new google.maps.LatLng(43.649465, -79.393288), weight: 1}, //Queen St East at Empire Ave
+{location: new google.maps.LatLng(43.662783, -79.332569), weight: 1}, //Queen St East at Logan Ave
+{location: new google.maps.LatLng(43.660953, -79.340208), weight: 1}, //Queen St East at Carlaw Ave
+{location: new google.maps.LatLng(43.661429, -79.338074), weight: 1}, //Queen St East at Pape Ave
+{location: new google.maps.LatLng(43.662069, -79.335808), weight: 1}, //Queen St East at Caroline Ave
+{location: new google.maps.LatLng(43.662925, -79.33282), weight: 1}, //Queen St East at Jones Ave
+{location: new google.maps.LatLng(43.663143, -79.330376), weight: 1}, //Queen St East at Leslie St
+{location: new google.maps.LatLng(43.66388, -79.327688), weight: 1}, //Queen St East at Alton Ave
+{location: new google.maps.LatLng(43.664452, -79.325179), weight: 1}, //Queen St East at Greenwood Ave
+{location: new google.maps.LatLng(43.665353, -79.321174), weight: 1}, //Queen St East at Woodfield Rd
+{location: new google.maps.LatLng(43.666427, -79.316446), weight: 1}, //Queen St East at Coxwell Ave
+{location: new google.maps.LatLng(43.667029, -79.312948), weight: 1}, //Queen St East at Kingston Rd
+{location: new google.maps.LatLng(43.667893, -79.309305), weight: 1}, //Queen St East at Sarah Ashbridge Ave
+{location: new google.maps.LatLng(43.668635, -79.305945), weight: 1}, //Queen St East at Woodbine Ave
+{location: new google.maps.LatLng(43.675537, -79.306008), weight: 1}, //Queen St East at Elmer Ave
+{location: new google.maps.LatLng(43.670148, -79.299743), weight: 1}, //Queen St East at Bellefair Ave
+{location: new google.maps.LatLng(43.671048, -79.295031), weight: 1}, //Queen St East at Wineva Ave East Side
+{location: new google.maps.LatLng(43.679631, -79.294644), weight: 1}, //Queen St East at Glen Manor Dr
+{location: new google.maps.LatLng(43.662783, -79.332569), weight: 1}, //Queen St East at Beech Ave
+{location: new google.maps.LatLng(43.673262, -79.28497), weight: 1}, //Queen St East at Silver Birch Ave
+{location: new google.maps.LatLng(43.673911, -79.281723), weight: 1}, //Queen St East at Neville Park Blvd
+
+{location: new google.maps.LatLng(43.641451, -79.414528), weight: 1}, //King St West at Shaw St East Side
+{location: new google.maps.LatLng(43.646101, -79.391644), weight: 1}, //King St West at Blue Jays Way East Side
+{location: new google.maps.LatLng(43.646614, -79.389267), weight: 1}, //King St West at John St East Side
+{location: new google.maps.LatLng(43.647725, -79.384175), weight: 1}, //King St West at University Ave East Side - St Andrew Station
+{location: new google.maps.LatLng(43.648724, -79.379621), weight: 1}, //King St West at Bay St East Side
+{location: new google.maps.LatLng(43.649232, -79.377256), weight: 1}, //King St West at Yonge St East Side - King Station
+{location: new google.maps.LatLng(43.649982, -79.373826), weight: 1}, //King St East at Church St East Side
+{location: new google.maps.LatLng(43.650541, -79.371287), weight: 1}, //King St West at Jarvis St East Side
+{location: new google.maps.LatLng(43.651347, -79.368135), weight: 1}, //King St East at Sherbourne St
+{location: new google.maps.LatLng(43.651864, -79.365876), weight: 1}, //King St East at Ontario St
+{location: new google.maps.LatLng(43.65291, -79.363021), weight: 1}, //King St East at Parliament St
+{location: new google.maps.LatLng(43.6543, -79.360379), weight: 1}, //King St East at Sackville St
+{location: new google.maps.LatLng(43.65528, -79.358705), weight: 1}, //King St East at Sumach St
+{location: new google.maps.LatLng(43.657079, -79.35597), weight: 1}, //King St East at Lower River St
+{location: new google.maps.LatLng(43.658422, -79.352103), weight: 1}, //Queen St East at Carroll St
+{location: new google.maps.LatLng(43.658746, -79.35006), weight: 1}, //Queen St East at Broadview Ave
+{location: new google.maps.LatLng(43.659402, -79.347097), weight: 1}, //Queen St East at Saulter St East Side
+{location: new google.maps.LatLng(43.660216, -79.344102), weight: 1}, //Queen St East at Empire Ave
+{location: new google.maps.LatLng(43.662783, -79.332569), weight: 1}, //Queen St East at Logan Ave
+{location: new google.maps.LatLng(43.660953, -79.340208), weight: 1}, //Queen St East at Carlaw Ave
+{location: new google.maps.LatLng(43.661429, -79.338074), weight: 1}, //Queen St East at Pape Ave
+{location: new google.maps.LatLng(43.662069, -79.335808), weight: 1}, //Queen St East at Caroline Ave
+{location: new google.maps.LatLng(43.662783, -79.332569), weight: 1}, //Queen St East at Jones Ave
+{location: new google.maps.LatLng(43.663143, -79.330376), weight: 1}, //Queen St East at Leslie St
+{location: new google.maps.LatLng(43.66388, -79.327688), weight: 1}, //Queen St East at Alton Ave
+{location: new google.maps.LatLng(43.664452, -79.325179), weight: 1}, //Queen St East at Greenwood Ave
+{location: new google.maps.LatLng(43.665141, -79.32153), weight: 1}, //Queen St East at Woodfield Rd
+{location: new google.maps.LatLng(43.666427, -79.316446), weight: 1}, //Queen St East at Coxwell Ave
+{location: new google.maps.LatLng(43.667029, -79.312948), weight: 1}, //Queen St East at Kingston Rd
+{location: new google.maps.LatLng(43.669775, -79.311175), weight: 1}, //Kingston Rd at Dixon Ave
+{location: new google.maps.LatLng(43.672756, -79.309127), weight: 1}, //Kingston Rd at Rainsford Rd
+{location: new google.maps.LatLng(43.680919, -79.310592), weight: 1}, //Kingston Rd at Woodbine Ave
+{location: new google.maps.LatLng(43.675537, -79.306008), weight: 1}, //Kingston Rd at Elmer Ave
+{location: new google.maps.LatLng(43.689268, -79.314445), weight: 1}, //Kingston Rd at Waverley Rd
+{location: new google.maps.LatLng(43.678324, -79.294644), weight: 1}, //Kingston Rd at Lee Ave
+{location: new google.maps.LatLng(43.678753, -79.298363), weight: 1}, //Kingston Rd at Southwood Dr
+{location: new google.maps.LatLng(43.679631, -79.294644), weight: 1}, //Kingston Rd at Glen Manor Dr
+{location: new google.maps.LatLng(43.680314, -79.29052), weight: 1}, //Kingston Rd at Beech Ave
+{location: new google.maps.LatLng(43.680468, -79.287193), weight: 1}, //Kingston Rd at Scarborough Rd
+{location: new google.maps.LatLng(43.6809, -79.283931), weight: 1}, //Kingston Rd at Victoria Park Ave
+{location: new google.maps.LatLng(43.68146, -79.285), weight: 1}, //Bingham Loop
+
+
+{location: new google.maps.LatLng(43.631119, -79.478867), weight: 1}, //Humber Loop at the Queensway
+{location: new google.maps.LatLng(43.635656, -79.473392), weight: 1}, //the Queensway at South Kingsway
+{location: new google.maps.LatLng(43.637314, -79.470466), weight: 1}, //the Queensway at Windermere Ave East Side
+{location: new google.maps.LatLng(43.637601, -79.46663), weight: 1}, //the Queensway at Ellis Ave East Side
+{location: new google.maps.LatLng(43.637953, -79.45948), weight: 1}, //the Queensway at Colborne Lodge Dr East Side
+{location: new google.maps.LatLng(43.639665, -79.453923), weight: 1}, //the Queensway at Parkside Dr
+{location: new google.maps.LatLng(43.639168, -79.450773), weight: 1}, //the Queensway at Glendale Ave East Side - St Joseph's Health
+{location: new google.maps.LatLng(43.656768, -79.453253), weight: 1}, //Dundas West Station
+{location: new google.maps.LatLng(43.657134, -79.453027), weight: 1}, //Edna Ave at Dundas St West
+{location: new google.maps.LatLng(43.656442, -79.452572), weight: 1}, //Dundas St West at Bloor St West
+{location: new google.maps.LatLng(43.653079, -79.45167), weight: 1}, //Roncesvalles Ave at Boustead Ave South Side
+{location: new google.maps.LatLng(43.650939, -79.450927), weight: 1}, //Roncesvalles Ave at Howard Park Ave South Side
+{location: new google.maps.LatLng(43.648639, -79.449872), weight: 1}, //Roncesvalles Ave at Grenadier Rd
+{location: new google.maps.LatLng(43.645921, -79.448985), weight: 1}, //Roncesvalles Ave at High Park Blvd South Side
+{location: new google.maps.LatLng(43.642982, -79.448917), weight: 1}, //Roncesvalles Ave at Galley Ave
+{location: new google.maps.LatLng(43.640654, -79.446945), weight: 1}, //Roncesvalles Ave at Marion St South Side
+{location: new google.maps.LatLng(43.638925, -79.446287), weight: 1}, //Roncesvalles Ave at Queen St West
+{location: new google.maps.LatLng(43.65348, -79.451258), weight: 1}, //Queen St West at Roncesvalles Ave East Side
+{location: new google.maps.LatLng(43.641174, -79.434064), weight: 1}, //Queen St West at Triller Ave
+{location: new google.maps.LatLng(43.639599, -79.441272), weight: 1}, //Queen St West at Beaty Ave
+{location: new google.maps.LatLng(43.637264, -79.435861), weight: 1}, //Queen St West at Jameson Ave
+{location: new google.maps.LatLng(43.640919, -79.434664), weight: 1}, //Queen St West at Dunn Ave
+{location: new google.maps.LatLng(43.641545, -79.432245), weight: 1}, //Queen St West at Brock Ave
+{location: new google.maps.LatLng(43.639085, -79.427001), weight: 1}, //Queen St West at Dufferin St
+{location: new google.maps.LatLng(43.641064, -79.417183), weight: 1}, //Queen St West at Sudbury St
+{location: new google.maps.LatLng(43.641174, -79.434064), weight: 1}, //Queen St West at Abell St
+{location: new google.maps.LatLng(43.643394, -79.422528), weight: 1}, //Queen St West at Dovercourt Rd
+{location: new google.maps.LatLng(43.64927, -79.420944), weight: 1}, //Queen St West at Ossington Ave
+{location: new google.maps.LatLng(43.64456, -79.416511), weight: 1}, //Queen St West at Shaw St
+{location: new google.maps.LatLng(43.642702, -79.415587), weight: 1}, //Shaw St at Adelaide St West
+{location: new google.maps.LatLng(43.641451, -79.414528), weight: 1}, //Shaw St at King St West
+{location: new google.maps.LatLng(43.641936, -79.412095), weight: 1}, //King St West at Strachan Ave
+{location: new google.maps.LatLng(43.642987, -79.407539), weight: 1}, //King St West at Niagara St
+{location: new google.maps.LatLng(43.643488, -79.405049), weight: 1}, //King St West at Tecumseth St
+{location: new google.maps.LatLng(43.641791, -79.415057), weight: 1}, //King St West at Bathurst St East Side
+{location: new google.maps.LatLng(43.644527, -79.39994), weight: 1}, //King St West at Portland St East Side
+{location: new google.maps.LatLng(43.645995, -79.378521), weight: 1}, //King St West at Spadina Ave East Side
+{location: new google.maps.LatLng(43.646101, -79.391644), weight: 1}, //King St West at Blue Jays Way East Side
+{location: new google.maps.LatLng(43.646538, -79.390161), weight: 1}, //King St West at John St East Side
+{location: new google.maps.LatLng(43.647725, -79.384175), weight: 1}, //King St West at University Ave East Side - St Andrew Station
+{location: new google.maps.LatLng(43.648724, -79.379621), weight: 1}, //King St West at Bay St East Side
+{location: new google.maps.LatLng(43.649249, -79.378022), weight: 1}, //King St West at Yonge St East Side - King Station
+{location: new google.maps.LatLng(43.649982, -79.373826), weight: 1}, //King St East at Church St East Side
+{location: new google.maps.LatLng(43.650391, -79.372454), weight: 1}, //King St West at Jarvis St East Side
+{location: new google.maps.LatLng(43.651347, -79.368135), weight: 1}, //King St East at Sherbourne St
+{location: new google.maps.LatLng(43.651864, -79.365876), weight: 1}, //King St East at Ontario St
+{location: new google.maps.LatLng(43.65291, -79.363021), weight: 1}, //King St East at Parliament St
+{location: new google.maps.LatLng(43.6543, -79.360379), weight: 1}, //King St East at Sackville St
+{location: new google.maps.LatLng(43.65528, -79.358705), weight: 1}, //King St East at Sumach St
+{location: new google.maps.LatLng(43.652436, -79.358636), weight: 1}, //Cherry St at Front St East
+{location: new google.maps.LatLng(43.650856, -79.356822), weight: 1}, //Distillery Loop
+{location: new google.maps.LatLng(43.65673, -79.356254), weight: 1}, //King St East at Lower River St
+{location: new google.maps.LatLng(43.658422, -79.352103), weight: 1}, //Queen St East at Carroll St
+{location: new google.maps.LatLng(43.658746, -79.35006), weight: 1}, //Queen St East at Broadview Ave
+{location: new google.maps.LatLng(43.662248, -79.351175), weight: 1}, //Broadview Ave at Dundas St East
+{location: new google.maps.LatLng(43.663942, -79.35187), weight: 1}, //Broadview Ave at Mountstephen St
+{location: new google.maps.LatLng(43.665274, -79.352444), weight: 1}, //Broadview Ave at Gerrard St East
+{location: new google.maps.LatLng(43.667679, -79.353319), weight: 1}, //Broadview Ave at Langley Ave-Hennick Bridgepoint Hospital
+{location: new google.maps.LatLng(43.669638, -79.35303), weight: 1}, //Broadview Ave at Withrow Ave
+{location: new google.maps.LatLng(43.671897, -79.354734), weight: 1}, //Broadview Ave at Millbrook Cres
+{location: new google.maps.LatLng(43.674457, -79.357342), weight: 1}, //Broadview Ave at Wolfrey Ave
+{location: new google.maps.LatLng(43.676342, -79.359041), weight: 1}, //Broadview Ave at Danforth Ave
+{location: new google.maps.LatLng(43.677011, -79.358044), weight: 1}, //Broadview Station
+
+{location: new google.maps.LatLng(43.656862, -79.453415), weight: 1}, //Dundas West Station
+{location: new google.maps.LatLng(43.657134, -79.453027), weight: 1}, //Edna Ave at Dundas St West
+{location: new google.maps.LatLng(43.65348, -79.451258), weight: 1}, //Dundas St West at Roncesvalles Ave East Side
+{location: new google.maps.LatLng(43.651921, -79.447458), weight: 1}, //Dundas St West at Howard Park Ave
+{location: new google.maps.LatLng(43.651198, -79.445012), weight: 1}, //Dundas St West at Sorauren Ave
+{location: new google.maps.LatLng(43.656442, -79.452572), weight: 1}, //Dundas St West at Sterling Rd
+{location: new google.maps.LatLng(43.649559, -79.439653), weight: 1}, //Dundas St West at Lansdowne Ave
+{location: new google.maps.LatLng(43.649938, -79.4355), weight: 1}, //Dundas St West at Brock Ave
+{location: new google.maps.LatLng(43.649721, -79.433841), weight: 1}, //Dundas St West at Sheridan Ave
+{location: new google.maps.LatLng(43.649587, -79.431565), weight: 1}, //Dundas St West at Dufferin St
+{location: new google.maps.LatLng(43.649633, -79.429626), weight: 1}, //Dundas St West at Gladstone Ave
+{location: new google.maps.LatLng(43.649434, -79.426882), weight: 1}, //Dundas St West at Lisgar St
+{location: new google.maps.LatLng(43.649513, -79.424553), weight: 1}, //Dundas St West at Dovercourt Rd
+{location: new google.maps.LatLng(43.64943, -79.42049), weight: 1}, //Dundas St West at Ossington Ave
+{location: new google.maps.LatLng(43.649724, -79.420791), weight: 1}, //Dundas St West at Shaw St North Side
+{location: new google.maps.LatLng(43.650777, -79.413806), weight: 1}, //Dundas St West at Grace St
+{location: new google.maps.LatLng(43.66468, -79.413525), weight: 1}, //Dundas St West at Manning Ave
+{location: new google.maps.LatLng(43.652475, -79.406185), weight: 1}, //Dundas St West at Bathurst St - Toronto Western Hospital
+{location: new google.maps.LatLng(43.665583, -79.490433), weight: 1}, //Dundas St West at Denison Ave
+{location: new google.maps.LatLng(43.653064, -79.397708), weight: 1}, //Dundas St West at Spadina Ave
+{location: new google.maps.LatLng(43.653887, -79.393724), weight: 1}, //Dundas St West at Beverley St
+{location: new google.maps.LatLng(43.654219, -79.391552), weight: 1}, //Dundas St West at McCaul St
+{location: new google.maps.LatLng(43.654679, -79.388742), weight: 1}, //Dundas St West at University Ave - St Patrick Station
+{location: new google.maps.LatLng(43.655136, -79.386129), weight: 1}, //Dundas St West at Chestnut St
+{location: new google.maps.LatLng(43.655845, -79.383493), weight: 1}, //Dundas St West at Bay St
+{location: new google.maps.LatLng(43.656196, -79.380763), weight: 1}, //Dundas St West at Yonge St - Dundas Station
+{location: new google.maps.LatLng(43.656583, -79.376993), weight: 1}, //Dundas St East at Church St
+{location: new google.maps.LatLng(43.656947, -79.374706), weight: 1}, //Dundas St East at Jarvis St
+{location: new google.maps.LatLng(43.65822, -79.371303), weight: 1}, //Dundas St East at Sherbourne St
+{location: new google.maps.LatLng(43.658752, -79.368653), weight: 1}, //Dundas St East at Ontario St
+{location: new google.maps.LatLng(43.65951, -79.365882), weight: 1}, //Dundas St East at Parliament St
+{location: new google.maps.LatLng(43.660471, -79.358), weight: 1}, //Dundas St East at Regent Park Blvd
+{location: new google.maps.LatLng(43.661284, -79.358), weight: 1}, //Dundas St East at River St
+{location: new google.maps.LatLng(43.661937, -79.353136), weight: 1}, //Dundas St East at Munro St
+{location: new google.maps.LatLng(43.662248, -79.351175), weight: 1}, //Dundas St East at Broadview Ave
+{location: new google.maps.LatLng(43.664096, -79.35214), weight: 1}, //Broadview Ave at Mountstephen St
+{location: new google.maps.LatLng(43.665274, -79.352444), weight: 1}, //Broadview Ave at Gerrard St East
+{location: new google.maps.LatLng(43.66768, -79.353319), weight: 1}, //Broadview Ave at Langley Ave-Hennick Bridgepoint Hospital
+{location: new google.maps.LatLng(43.669638, -79.35303), weight: 1}, //Broadview Ave at Withrow Ave
+{location: new google.maps.LatLng(43.671897, -79.354734), weight: 1}, //Broadview Ave at Millbrook Cres
+{location: new google.maps.LatLng(43.674457, -79.357342), weight: 1}, //Broadview Ave at Wolfrey Ave
+{location: new google.maps.LatLng(43.676342, -79.359041), weight: 1}, //Broadview Ave at Danforth Ave
+{location: new google.maps.LatLng(43.677011, -79.358044), weight: 1}, //Broadview Station
+
+{location: new google.maps.LatLng(43.65397, -79.466354), weight: 1}, //High Park Loop
+{location: new google.maps.LatLng(43.649118, -79.484624), weight: 1}, //Howard Park Ave at Parkside Dr East Side
+{location: new google.maps.LatLng(43.650555, -79.455063), weight: 1}, //Howard Park Ave at Indian Rd
+{location: new google.maps.LatLng(43.651426, -79.451176), weight: 1}, //Howard Park Ave at Roncesvalles Ave
+{location: new google.maps.LatLng(43.649559, -79.439653), weight: 1}, //Howard Park Ave at Dundas St West
+{location: new google.maps.LatLng(43.656442, -79.452572), weight: 1}, //Dundas St West at Sorauren Ave
+{location: new google.maps.LatLng(43.656442, -79.452572), weight: 1}, //Dundas St West at Sterling Rd
+{location: new google.maps.LatLng(43.650681, -79.439866), weight: 1}, //College St at Lansdowne Ave
+{location: new google.maps.LatLng(43.651699, -79.436456), weight: 1}, //College St at Brock Ave
+{location: new google.maps.LatLng(43.652635, -79.432423), weight: 1}, //College St at Dufferin St
+{location: new google.maps.LatLng(43.652817, -79.429769), weight: 1}, //College St at Rusholme Park Cres
+{location: new google.maps.LatLng(43.653692, -79.426251), weight: 1}, //College St at Dovercourt Rd
+{location: new google.maps.LatLng(43.654475, -79.422554), weight: 1}, //College St at Ossington Ave
+{location: new google.maps.LatLng(43.65523, -79.418874), weight: 1}, //College St at Crawford St
+{location: new google.maps.LatLng(43.654987, -79.415821), weight: 1}, //College St at Grace St
+{location: new google.maps.LatLng(43.655597, -79.41145), weight: 1}, //College St at Euclid Ave
+{location: new google.maps.LatLng(43.656336, -79.407836), weight: 1}, //College St at Bathurst St
+{location: new google.maps.LatLng(43.656855, -79.405276), weight: 1}, //College St at Borden St
+{location: new google.maps.LatLng(43.65724, -79.403252), weight: 1}, //College St at Augusta Ave
+{location: new google.maps.LatLng(43.657863, -79.400435), weight: 1}, //College St at Spadina Ave
+{location: new google.maps.LatLng(43.658547, -79.396368), weight: 1}, //College St at Beverley St
+{location: new google.maps.LatLng(43.659061, -79.393721), weight: 1}, //College St at McCaul St
+{location: new google.maps.LatLng(43.659697, -79.390773), weight: 1}, //College St at University Ave - Queen's Park Station
+{location: new google.maps.LatLng(43.65724, -79.403252), weight: 1}, //College St at Elizabeth St
+{location: new google.maps.LatLng(43.660672, -79.386165), weight: 1}, //College St at Bay St
+{location: new google.maps.LatLng(43.661259, -79.383245), weight: 1}, //College St at Yonge St - College Station
+{location: new google.maps.LatLng(43.661975, -79.37919), weight: 1}, //Carlton St at Church St
+{location: new google.maps.LatLng(43.662511, -79.376575), weight: 1}, //Carlton St at Jarvis St
+{location: new google.maps.LatLng(43.66307, -79.373237), weight: 1}, //Carlton St at Sherbourne St
+{location: new google.maps.LatLng(43.663821, -79.370401), weight: 1}, //Carlton St at Ontario St
+{location: new google.maps.LatLng(43.664144, -79.36819), weight: 1}, //Carlton St at Parliament St
+{location: new google.maps.LatLng(43.662048, -79.367169), weight: 1}, //Parliament St at Gerrard St East
+{location: new google.maps.LatLng(43.663061, -79.363903), weight: 1}, //Gerrard St East at Sackville St
+{location: new google.maps.LatLng(43.662685, -79.363903), weight: 1}, //Gerrard St East at Sumach St
+{location: new google.maps.LatLng(43.661284, -79.358), weight: 1}, //Gerrard St East at River St
+{location: new google.maps.LatLng(43.664667, -79.355383), weight: 1}, //Gerrard St East at Blackburn St
+{location: new google.maps.LatLng(43.665376, -79.352906), weight: 1}, //Gerrard St East at Broadview Ave
+{location: new google.maps.LatLng(43.66641, -79.348419), weight: 1}, //Gerrard St East at de Grassi St
+{location: new google.maps.LatLng(43.662783, -79.332569), weight: 1}, //Gerrard St East at Logan Ave
+{location: new google.maps.LatLng(43.667491, -79.342998), weight: 1}, //Gerrard St East at Carlaw Ave
+{location: new google.maps.LatLng(43.668045, -79.340492), weight: 1}, //Gerrard St East at Pape Ave
+{location: new google.maps.LatLng(43.668855, -79.337448), weight: 1}, //Gerrard St East at Marjory Ave
+{location: new google.maps.LatLng(43.666057, -79.334146), weight: 1}, //Gerrard St East at Jones Ave
+{location: new google.maps.LatLng(43.669663, -79.333264), weight: 1}, //Gerrard St East at Leslie St
+{location: new google.maps.LatLng(43.66388, -79.327688), weight: 1}, //Gerrard St East at Alton Ave
+{location: new google.maps.LatLng(43.670755, -79.327828), weight: 1}, //Gerrard St East at Greenwood Ave
+{location: new google.maps.LatLng(43.671001, -79.327856), weight: 1}, //Gerrard St East at Woodfield Rd
+{location: new google.maps.LatLng(43.678557, -79.347166), weight: 1}, //Gerrard St East at Coxwell Ave
+{location: new google.maps.LatLng(43.668538, -79.317395), weight: 1}, //Coxwell Ave at Gerrard St East
+{location: new google.maps.LatLng(43.67629, -79.316879), weight: 1}, //Gerrard St East at Beaton Ave
+{location: new google.maps.LatLng(43.677874, -79.315075), weight: 1}, //Gerrard St East at Bowmore Rd
+{location: new google.maps.LatLng(43.67986, -79.312662), weight: 1}, //Gerrard St East at Kingsmount Park Rd
+{location: new google.maps.LatLng(43.680919, -79.310592), weight: 1}, //Gerrard St East at Woodbine Ave
+{location: new google.maps.LatLng(43.682091, -79.308289), weight: 1}, //Gerrard St East at Golfview Ave
+{location: new google.maps.LatLng(43.682547, -79.306185), weight: 1}, //Gerrard St East at Glenmount Park Rd
+{location: new google.maps.LatLng(43.683463, -79.302731), weight: 1}, //Gerrard St East at Norwood Rd
+{location: new google.maps.LatLng(43.688277, -79.301688), weight: 1}, //Gerrard St East at Main St
+{location: new google.maps.LatLng(43.688037, -79.301635), weight: 1}, //Main St at Danforth Ave
+{location: new google.maps.LatLng(43.689037, -79.301926), weight: 1}, //Main Street Station
+
+{location: new google.maps.LatLng(43.592111, -79.5437), weight: 1}, //Long Branch Loop
+{location: new google.maps.LatLng(43.593334, -79.538348), weight: 1}, //Lake Shore Blvd West at Thirty Seventh St
+{location: new google.maps.LatLng(43.594303, -79.53413), weight: 1}, //Lake Shore Blvd West at Long Branch Ave
+{location: new google.maps.LatLng(43.595155, -79.530407), weight: 1}, //Lake Shore Blvd West at Thirty First St
+{location: new google.maps.LatLng(43.595685, -79.527699), weight: 1}, //Lake Shore Blvd West at Twenty Eighth St
+{location: new google.maps.LatLng(43.596328, -79.525043), weight: 1}, //Lake Shore Blvd West at Twenty Seventh St
+{location: new google.maps.LatLng(43.597338, -79.521251), weight: 1}, //Lake Shore Blvd West at Twenty Second St
+{location: new google.maps.LatLng(43.598061, -79.516776), weight: 1}, //Lake Shore Blvd West at Colonel Samuel Smith Park Dr
+{location: new google.maps.LatLng(43.599877, -79.508796), weight: 1}, //Lake Shore Blvd West at Thirteenth St
+{location: new google.maps.LatLng(43.600155, -79.508496), weight: 1}, //Lake Shore Blvd West at Tenth St
+{location: new google.maps.LatLng(43.600638, -79.505392), weight: 1}, //Lake Shore Blvd West at Seventh St
+{location: new google.maps.LatLng(43.601388, -79.502863), weight: 1}, //Lake Shore Blvd West at Fifth St
+{location: new google.maps.LatLng(43.601881, -79.500644), weight: 1}, //Lake Shore Blvd West at Third St
+{location: new google.maps.LatLng(43.60214, -79.498592), weight: 1}, //Lake Shore Blvd West at First St
+{location: new google.maps.LatLng(43.60382, -79.493033), weight: 1}, //Lake Shore Blvd West at Royal York Rd
+{location: new google.maps.LatLng(43.607993, -79.490263), weight: 1}, //Lake Shore Blvd West at Miles Rd
+{location: new google.maps.LatLng(43.628942, -79.478392), weight: 1}, //Lake Shore Blvd West at Norris Cres
+{location: new google.maps.LatLng(43.613542, -79.489314), weight: 1}, //Lake Shore Blvd West at Mimico Ave
+{location: new google.maps.LatLng(43.615096, -79.48869), weight: 1}, //Lake Shore Blvd West at Superior Ave
+{location: new google.maps.LatLng(43.617446, -79.48738), weight: 1}, //Lake Shore Blvd West at Burlington St
+{location: new google.maps.LatLng(43.619048, -79.486446), weight: 1}, //Lake Shore Blvd West at Louisa St
+{location: new google.maps.LatLng(43.620622, -79.483163), weight: 1}, //Lake Shore Blvd West at Legion Rd
+{location: new google.maps.LatLng(43.622602, -79.481558), weight: 1}, //Lake Shore Blvd West at Park Lawn Rd
+{location: new google.maps.LatLng(43.625705, -79.479741), weight: 1}, //2155 Lake Shore Blvd West
+{location: new google.maps.LatLng(43.628942, -79.478392), weight: 1}, //2111 Lake Shore Blvd West
+{location: new google.maps.LatLng(43.631119, -79.478867), weight: 1}, //Humber Loop at the Queensway
+
+
+
+{location: new google.maps.LatLng(43.592111, -79.5437), weight: 1}, //Long Branch Loop
+{location: new google.maps.LatLng(43.593334, -79.538348), weight: 1}, //Lake Shore Blvd West at Thirty Seventh St
+{location: new google.maps.LatLng(43.594303, -79.53413), weight: 1}, //Lake Shore Blvd West at Long Branch Ave
+{location: new google.maps.LatLng(43.595155, -79.530407), weight: 1}, //Lake Shore Blvd West at Thirty First St
+{location: new google.maps.LatLng(43.595685, -79.527699), weight: 1}, //Lake Shore Blvd West at Twenty Eighth St
+{location: new google.maps.LatLng(43.596328, -79.525043), weight: 1}, //Lake Shore Blvd West at Twenty Seventh St
+{location: new google.maps.LatLng(43.597338, -79.521251), weight: 1}, //Lake Shore Blvd West at Twenty Second St
+{location: new google.maps.LatLng(43.598061, -79.516776), weight: 1}, //Lake Shore Blvd West at Colonel Samuel Smith Park Dr
+{location: new google.maps.LatLng(43.599214, -79.51196), weight: 1}, //Lake Shore Blvd West at Thirteenth St
+{location: new google.maps.LatLng(43.599877, -79.508796), weight: 1}, //Lake Shore Blvd West at Tenth St
+{location: new google.maps.LatLng(43.600155, -79.508496), weight: 1}, //Lake Shore Blvd West at Seventh St
+{location: new google.maps.LatLng(43.600638, -79.505392), weight: 1}, //Lake Shore Blvd West at Fifth St
+{location: new google.maps.LatLng(43.60078, -79.506431), weight: 1}, //Lake Shore Blvd West at Third St
+{location: new google.maps.LatLng(43.600902, -79.505422), weight: 1}, //Lake Shore Blvd West at First St
+{location: new google.maps.LatLng(43.601388, -79.502863), weight: 1}, //Lake Shore Blvd West at Royal York Rd
+{location: new google.maps.LatLng(43.601526, -79.545017), weight: 1}, //Lake Shore Blvd West at Miles Rd
+{location: new google.maps.LatLng(43.603747, -79.533562), weight: 1}, //Lake Shore Blvd West at Norris Cres
+{location: new google.maps.LatLng(43.607993, -79.490263), weight: 1}, //Lake Shore Blvd West at Mimico Ave
+{location: new google.maps.LatLng(43.610792, -79.549007), weight: 1}, //Lake Shore Blvd West at Superior Ave
+{location: new google.maps.LatLng(43.614961, -79.497772), weight: 1}, //Lake Shore Blvd West at Burlington St
+{location: new google.maps.LatLng(43.615096, -79.48869), weight: 1}, //Lake Shore Blvd West at Louisa St
+{location: new google.maps.LatLng(43.616013, -79.524922), weight: 1}, //Lake Shore Blvd West at Legion Rd
+{location: new google.maps.LatLng(43.6198, -79.499772), weight: 1}, //Lake Shore Blvd West at Park Lawn Rd
+{location: new google.maps.LatLng(43.622987, -79.481651), weight: 1}, //2155 Lake Shore Blvd West
+{location: new google.maps.LatLng(43.625705, -79.479741), weight: 1}, //2111 Lake Shore Blvd West
+{location: new google.maps.LatLng(43.631119, -79.478867), weight: 1}, //Humber Loop at the Queensway
+{location: new google.maps.LatLng(43.631002, -79.47873), weight: 1}, //Humber Loop at the Queensway
+{location: new google.maps.LatLng(43.631194, -79.478505), weight: 1}, //Humber Loop at the Queensway
+{location: new google.maps.LatLng(43.631002, -79.47873), weight: 1}, //Humber Loop at the Queensway
+{location: new google.maps.LatLng(43.635656, -79.473392), weight: 1}, //the Queensway at South Kingsway
+{location: new google.maps.LatLng(43.637314, -79.470466), weight: 1}, //the Queensway at Windermere Ave East Side
+{location: new google.maps.LatLng(43.637601, -79.46663), weight: 1}, //the Queensway at Ellis Ave East Side
+{location: new google.maps.LatLng(43.637953, -79.459485), weight: 1}, //the Queensway at Colborne Lodge Dr East Side
+{location: new google.maps.LatLng(43.639665, -79.453923), weight: 1}, //the Queensway at Parkside Dr
+{location: new google.maps.LatLng(43.639168, -79.450773), weight: 1}, //the Queensway at Glendale Ave East Side - St Joseph's Health
+{location: new google.maps.LatLng(43.641936, -79.412095), weight: 1}, //Queen St West at Roncesvalles Ave East Side
+{location: new google.maps.LatLng(43.641451, -79.414528), weight: 1}, //Queen St West at Triller Ave
+{location: new google.maps.LatLng(43.641064, -79.417183), weight: 1}, //Queen St West at Beaty Ave
+{location: new google.maps.LatLng(43.641791, -79.415057), weight: 1}, //Queen St West at Jameson Ave
+{location: new google.maps.LatLng(43.640919, -79.434664), weight: 1}, //Queen St West at Dunn Ave
+{location: new google.maps.LatLng(43.649459, -79.431252), weight: 1}, //Queen St West at Brock Ave
+{location: new google.maps.LatLng(43.649724, -79.420791), weight: 1}, //Queen St West at Dufferin St
+{location: new google.maps.LatLng(43.641064, -79.417183), weight: 1}, //Queen St West at Sudbury St
+{location: new google.maps.LatLng(43.641174, -79.434064), weight: 1}, //Queen St West at Abell St
+{location: new google.maps.LatLng(43.643394, -79.422528), weight: 1}, //Queen St West at Dovercourt Rd
+{location: new google.maps.LatLng(43.64927, -79.420944), weight: 1}, //Queen St West at Ossington Ave
+{location: new google.maps.LatLng(43.644499, -79.416852), weight: 1}, //Queen St West at Shaw St
+{location: new google.maps.LatLng(43.641451, -79.414528), weight: 1}, //Shaw St at Adelaide St West
+{location: new google.maps.LatLng(43.641309, -79.415217), weight: 1}, //Shaw St at King St West
+{location: new google.maps.LatLng(43.641936, -79.412095), weight: 1}, //King St West at Strachan Ave
+{location: new google.maps.LatLng(43.642987, -79.407539), weight: 1}, //King St West at Niagara St
+{location: new google.maps.LatLng(43.643488, -79.405049), weight: 1}, //King St West at Tecumseth St
+{location: new google.maps.LatLng(43.638684, -79.400466), weight: 1}, //King St West at Bathurst St East Side
+{location: new google.maps.LatLng(43.641309, -79.415217), weight: 1}, //King St West at Portland St East Side
+{location: new google.maps.LatLng(43.645507, -79.394296), weight: 1}, //King St West at Spadina Ave East Side
+{location: new google.maps.LatLng(43.646101, -79.391644), weight: 1}, //King St West at Blue Jays Way East Side
+{location: new google.maps.LatLng(43.646614, -79.389267), weight: 1}, //King St West at John St East Side
+{location: new google.maps.LatLng(43.647725, -79.384175), weight: 1}, //King St West at University Ave East Side - St Andrew Station
+{location: new google.maps.LatLng(43.648724, -79.379621), weight: 1}, //King St West at Bay St East Side
+{location: new google.maps.LatLng(43.649232, -79.377256), weight: 1}, //King St West at Yonge St East Side - King Station
+{location: new google.maps.LatLng(43.650391, -79.372454), weight: 1}, //King St East at Church St East Side
+{location: new google.maps.LatLng(43.650541, -79.371287), weight: 1}, //King St West at Jarvis St East Side
+{location: new google.maps.LatLng(43.651347, -79.368135), weight: 1}, //King St East at Sherbourne St
+{location: new google.maps.LatLng(43.651647, -79.366167), weight: 1}, //King St East at Ontario St
+{location: new google.maps.LatLng(43.652556, -79.363371), weight: 1}, //King St East at Parliament St
+{location: new google.maps.LatLng(43.6543, -79.360379), weight: 1}, //King St East at Sackville St
+{location: new google.maps.LatLng(43.65528, -79.358705), weight: 1}, //King St East at Sumach St
+{location: new google.maps.LatLng(43.65673, -79.356254), weight: 1}, //King St East at Lower River St
+{location: new google.maps.LatLng(43.658422, -79.352103), weight: 1}, //Queen St East at Carroll St
+{location: new google.maps.LatLng(43.658746, -79.35006), weight: 1}, //Queen St East at Broadview Ave
+{location: new google.maps.LatLng(43.662248, -79.351175), weight: 1}, //Broadview Ave at Dundas St East
+{location: new google.maps.LatLng(43.664096, -79.35214), weight: 1}, //Broadview Ave at Mountstephen St
+{location: new google.maps.LatLng(43.665274, -79.352444), weight: 1}, //Broadview Ave at Gerrard St East
+{location: new google.maps.LatLng(43.667603, -79.353319), weight: 1}, //Broadview Ave at Langley Ave-Hennick Bridgepoint Hospital
+{location: new google.maps.LatLng(43.669859, -79.353435), weight: 1}, //Broadview Ave at Withrow Ave
+{location: new google.maps.LatLng(43.671897, -79.354734), weight: 1}, //Broadview Ave at Millbrook Cres
+{location: new google.maps.LatLng(43.674457, -79.357342), weight: 1}, //Broadview Ave at Wolfrey Ave
+{location: new google.maps.LatLng(43.677011, -79.358044), weight: 1}, //Broadview Station
+
+
+{location: new google.maps.LatLng(43.636511, -79.41471), weight: 1}, //Exhibition Loop at Manitoba Dr
+{location: new google.maps.LatLng(43.63647, -79.400131), weight: 1}, //Fleet St at Bathurst St
+{location: new google.maps.LatLng(43.636256, -79.406278), weight: 1}, //Fleet St at Fort York Blvd East Side
+{location: new google.maps.LatLng(43.63642, -79.400545), weight: 1}, //Fleet St at Bathurst St West Side
+{location: new google.maps.LatLng(43.6363,-79.415373), weight: 1}, //Exhibition Loop
+{location: new google.maps.LatLng(43.63749, -79.403513), weight: 1}, //Fort York Blvd at Bastion St East Side
+{location: new google.maps.LatLng(43.638684, -79.400466), weight: 1}, //Bathurst St at Fort York Blvd
+{location: new google.maps.LatLng(43.636507, -79.409869), weight: 1}, //Fleet St at Strachan Ave
+{location: new google.maps.LatLng(43.63585, -79.403771), weight: 1}, //Fleet St at Bastion St
+{location: new google.maps.LatLng(43.63647, -79.400131), weight: 1}, //Fleet St at Bathurst St
+{location: new google.maps.LatLng(43.637757, -79.391176), weight: 1}, //Queens Quay West at Lower Spadina Ave East Side
+{location: new google.maps.LatLng(43.638419, -79.39184), weight: 1}, //Queens Quay Loop at Lower Spadina Ave
+{location: new google.maps.LatLng(43.636331, -79.415373), weight: 1}, //Exhibition Loop
+{location: new google.maps.LatLng(43.638781, -79.427202), weight: 1}, //Dufferin St at King St West
+{location: new google.maps.LatLng(43.637757, -79.391176), weight: 1}, //Queens Quay West at Lower Spadina Ave East Side
+{location: new google.maps.LatLng(43.636511, -79.41471), weight: 1}, //Exhibition Loop at Manitoba Dr
+{location: new google.maps.LatLng(43.63647, -79.400131), weight: 1}, //Fleet St at Bathurst St
+{location: new google.maps.LatLng(43.635874, -79.417054), weight: 1}, //Exhibition Loop
+{location: new google.maps.LatLng(43.637781, -79.391731), weight: 1}, //Queens Quay West at Lower Spadina Ave East Side
+{location: new google.maps.LatLng(43.63876, -79.386798), weight: 1}, //Queens Quay West at Rees St
+{location: new google.maps.LatLng(43.639613, -79.381765), weight: 1}, //Queens Quay West at Harbourfront Centre
+{location: new google.maps.LatLng(43.641686, -79.377069), weight: 1}, //Bay St at Queens Quay West North Side - Jack Layton Ferry Te
+{location: new google.maps.LatLng(43.647377, -79.377049), weight: 1}, //Front St West at Bay St East Side - Union Station
+{location: new google.maps.LatLng(43.641806, -79.37718), weight: 1}, //Queens Quay/Ferry Docks Station
+{location: new google.maps.LatLng(43.645652, -79.37921), weight: 1}, //Union Station Streetcar Platform
+{location: new google.maps.LatLng(43.636511, -79.41471), weight: 1}, //Exhibition Loop at Manitoba Dr
+{location: new google.maps.LatLng(43.645995, -79.378521), weight: 1}, //Front St West at Bay St East Side - Union Station
+
+{location: new google.maps.LatLng(43.667271,-79.403784), weight: 1}, //Spadina Station
+{location: new google.maps.LatLng(43.666698,-79.403965), weight: 1}, //Spadina Rd at Bloor St West
+{location: new google.maps.LatLng(43.66432,-79.402783), weight: 1}, //Spadina Ave at Sussex Ave South Side
+{location: new google.maps.LatLng(43.663078,-79.402395), weight: 1}, //Spadina Ave at Harbord St
+{location: new google.maps.LatLng(43.661321,-79.40171), weight: 1}, //Spadina Ave at Willcocks St
+{location: new google.maps.LatLng(43.658024,-79.398341), weight: 1}, //Spadina Ave at College St
+{location: new google.maps.LatLng(43.65598,-79.399529), weight: 1}, //Spadina Ave at Nassau St
+{location: new google.maps.LatLng(43.652844,-79.397885), weight: 1}, //Spadina Ave at Dundas St West
+{location: new google.maps.LatLng(43.650935,-79.397498), weight: 1}, //Spadina Ave at Sullivan St
+{location: new google.maps.LatLng(43.648722,-79.396103), weight: 1}, //Spadina Ave at Queen St West
+{location: new google.maps.LatLng(43.645496,-79.395355), weight: 1}, //Spadina Ave at King St West
+{location: new google.maps.LatLng(43.642611,-79.393564), weight: 1}, //Spadina Ave at Front St West
+{location: new google.maps.LatLng(43.640742,-79.393327), weight: 1}, //Spadina Ave at Fort York Blvd
+{location: new google.maps.LatLng(43.636812,-79.39661), weight: 1}, //Dan Leckie Way at Queens Quay West
+{location: new google.maps.LatLng(43.63813,-79.391819), weight: 1}, //Spadina Ave at Queens Quay West North Side
+
+
+{location: new google.maps.LatLng(43.666061,-79.411065), weight: 1}, //Bathurst Station
+{location: new google.maps.LatLng(43.663726,-79.410537), weight: 1}, //Bathurst St at Lennox St
+{location: new google.maps.LatLng(43.66142,-79.409618), weight: 1}, //Bathurst St at Harbord St
+{location: new google.maps.LatLng(43.659869,-79.409188), weight: 1}, //Bathurst St at Ulster St
+{location: new google.maps.LatLng(43.656244,-79.407513), weight: 1}, //Bathurst St at College St
+{location: new google.maps.LatLng(43.654353,-79.406946), weight: 1}, //Bathurst St at Nassau St - Toronto Western Hospital
+{location: new google.maps.LatLng(43.652475,-79.406185), weight: 1}, //Bathurst St at Dundas St West - Toronto Western Hospital
+{location: new google.maps.LatLng(43.649099,-79.40483), weight: 1}, //Bathurst St at Robinson St
+{location: new google.maps.LatLng(43.647375,-79.404131), weight: 1}, //Bathurst St at Queen St West
+{location: new google.maps.LatLng(43.643664,-79.402522), weight: 1}, //Bathurst St at King St West
+{location: new google.maps.LatLng(43.641779,-79.401753), weight: 1}, //Bathurst St at Niagara St
+{location: new google.maps.LatLng(43.638684,-79.400466), weight: 1}, //Bathurst St at Fort York Blvd
+{location: new google.maps.LatLng(43.63647,-79.400131), weight: 1}, //Fleet St at Bathurst St West Side
+{location: new google.maps.LatLng(43.635968,-79.404148), weight: 1}, //Fleet St at Bastion St West Side
+{location: new google.maps.LatLng(43.636256,-79.406278), weight: 1}, //Fleet St at Fort York Blvd West Side
+{location: new google.maps.LatLng(43.636511,-79.41471), weight: 1}, //Manitoba Dr at Strachan Ave West Side
+{location: new google.maps.LatLng(43.636331,-79.415373), weight: 1}, //Exhibition Loop
+
+
+
+{location: new google.maps.LatLng(43.675983,-79.451027), weight: 1}, //Gunns Loop at St Clair Ave West
+{location: new google.maps.LatLng(43.671612,-79.471239), weight: 1}, //St Clair Ave West at Old Stock Yards Rd
+{location: new google.maps.LatLng(43.672009,-79.467228), weight: 1}, //St Clair Ave West at Keele St/ Weston Rd
+{location: new google.maps.LatLng(43.673248,-79.462852), weight: 1}, //St Clair Ave West at Old Weston Rd East Side
+{location: new google.maps.LatLng(43.674274,-79.459436), weight: 1}, //St Clair Ave West at Hounslow Heath Rd East Side
+{location: new google.maps.LatLng(43.67479,-79.457079), weight: 1}, //St Clair Ave West at Laughton Ave East Side
+{location: new google.maps.LatLng(43.675379,-79.454079), weight: 1}, //St Clair Ave West at Caledonia Rd East Side
+{location: new google.maps.LatLng(43.671144,-79.44826), weight: 1}, //St Clair Ave West at Lansdowne Ave East Side
+{location: new google.maps.LatLng(43.677045,-79.446847), weight: 1}, //St Clair Ave West at Earlscourt Ave East Side
+{location: new google.maps.LatLng(43.678326,-79.441114), weight: 1}, //St Clair Ave West at Dufferin St East Side
+{location: new google.maps.LatLng(43.678485,-79.440298), weight: 1}, //St Clair Ave West at Northcliffe Blvd East Side
+{location: new google.maps.LatLng(43.678985,-79.438072), weight: 1}, //St Clair Ave West at Glenholme Ave East Side
+{location: new google.maps.LatLng(43.679661,-79.43507), weight: 1}, //St Clair Ave West at Oakwood Ave East Side
+{location: new google.maps.LatLng(43.680326,-79.431948), weight: 1}, //St Clair Ave West at Winona Dr East Side
+{location: new google.maps.LatLng(43.681096,-79.428315), weight: 1}, //St Clair Ave West at Arlington Ave East Side
+{location: new google.maps.LatLng(43.681758,-79.425152), weight: 1}, //St Clair Ave West at Christie St East Side
+{location: new google.maps.LatLng(43.676582,-79.419513), weight: 1}, //St Clair Ave West at Wychwood Ave East Side
+{location: new google.maps.LatLng(43.682575,-79.420404), weight: 1}, //St Clair Ave West at Vaughan Rd East Side
+{location: new google.maps.LatLng(43.683286,-79.418144), weight: 1}, //St Clair Ave West at Bathurst St East Side
+{location: new google.maps.LatLng(43.684089,-79.41371), weight: 1}, //St Clair Ave West at Tweedsmuir Ave
+{location: new google.maps.LatLng(43.684699,-79.410569), weight: 1}, //St Clair Ave West at Spadina Rd East Side
+{location: new google.maps.LatLng(43.675664,-79.558038), weight: 1}, //St Clair Ave West at Russell Hill Rd East Side
+{location: new google.maps.LatLng(43.685864,-79.40547), weight: 1}, //St Clair Ave West at Dunvegan Rd
+{location: new google.maps.LatLng(43.686666,-79.400882), weight: 1}, //St Clair Ave West at Avenue Rd East Side
+{location: new google.maps.LatLng(43.687341,-79.397451), weight: 1}, //St Clair Ave West at Deer Park Cres East Side
+{location: new google.maps.LatLng(43.687897,-79.393924), weight: 1}, //St Clair Station
+      ];
+
+      // Coordinates and names for high schools in Toronto
+      var highSchoolLocations = [
+      {name: 'Central Technical School', location: new google.maps.LatLng(43.661201, -79.409653)},
+{name: 'Leaside High School', location: new google.maps.LatLng(43.7111943, -79.372426)},
+{name: 'Harbord Collegiate Institute', location: new google.maps.LatLng(43.6612094, -79.4142973)},
+{name: 'Jarvis Collegiate Institute', location: new google.maps.LatLng(43.665888, -79.3776125)},
+{name: 'Northern Secondary School', location: new google.maps.LatLng(43.7104458, -79.3906149)},
+{name: 'Rosedale Heights School of the Arts', location: new google.maps.LatLng(43.6739186, -79.3662624)},
+{name: 'Parkdale Collegiate Institute', location: new google.maps.LatLng(43.6396663, -79.4360715)},
+{name: 'Riverdale Collegiate Institute', location: new google.maps.LatLng(43.6696814, -79.3355707)},
+{name: 'East York Collegiate Institute', location: new google.maps.LatLng(43.6948222, -79.3278244)},
+{name: 'Bloor Collegiate Institute', location: new google.maps.LatLng(43.6639192, -79.4089736)},
+{name: 'Western Technical-Commercial School', location: new google.maps.LatLng(43.6568236, -79.4754412)},
+{name: 'Forest Hill Collegiate Institute', location: new google.maps.LatLng(43.7028887, -79.4214835)},
+{name: 'Malvern Collegiate Institute', location: new google.maps.LatLng(43.6828181, -79.2931903)},
+{name: 'Humberside Collegiate Institute', location: new google.maps.LatLng(43.6599513, -79.4706461)},
+{name: 'Danforth Collegiate and Technical Institute', location: new google.maps.LatLng(43.6822155, -79.333622)},
+{name: 'Oakwood Collegiate Institute', location: new google.maps.LatLng(43.6790099, -79.4365973)},
+{name: 'Notre Dame High School', location: new google.maps.LatLng(34.1586311, -118.4301766)},
+{name: 'Bishop Allen Academy', location: new google.maps.LatLng(43.6345954, -79.5046617)},
+{name: 'Bishop Marrocco/Thomas Merton Catholic Secondary School and Regional Arts Centre', location: new google.maps.LatLng(43.6561083, -79.4520945)},
+{name: 'Brebeuf College School', location: new google.maps.LatLng(43.8001594, -79.4026718)},
+{name: 'Cardinal Carter Academy for the Arts', location: new google.maps.LatLng(43.7638813, -79.4096469)},
+{name: 'Chaminade College School', location: new google.maps.LatLng(43.710083, -79.495944)},
+{name: 'Dante Alighieri Academy', location: new google.maps.LatLng(43.7017873, -79.550033)},
+{name: 'Father Henry Carr Catholic Secondary School', location: new google.maps.LatLng(43.7357062, -79.5923867)},
+{name: 'Father John Redmond Catholic Secondary School and Regional Arts Centre', location: new google.maps.LatLng(43.5951536, -79.5160265)},
+{name: 'Francis Libermann Catholic Secondary School', location: new google.maps.LatLng(43.8074, -79.274307)},
+{name: 'James Cardinal McGuigan Catholic High School', location: new google.maps.LatLng(43.763351, -79.4936082)},
+{name: 'Loretto Abbey Catholic Secondary School', location: new google.maps.LatLng(43.7410521, -79.4105452)},
+{name: 'Loretto College School', location: new google.maps.LatLng(43.6759656, -79.4432956)},
+{name: 'Madonna Catholic Secondary School', location: new google.maps.LatLng(43.729266, -79.4773405)},
+{name: 'Marshall McLuhan Catholic Secondary School', location: new google.maps.LatLng(43.7076173, -79.409414)},
+{name: 'Mary Ward Catholic Secondary School', location: new google.maps.LatLng(43.8127362, -79.305052)},
+{name: 'Michael Power - St. Joseph High School', location: new google.maps.LatLng(43.6596978, -79.5819069)},
+{name: 'Senator O’Connor College School', location: new google.maps.LatLng(43.7506144, -79.317419)},
+{name: 'St. Basil-the-Great College School', location: new google.maps.LatLng(43.7275561, -79.5334564)},
+{name: 'St. Joan of Arc Catholic Academy', location: new google.maps.LatLng(43.7379705, -79.2584144)},
+{name: 'St. John Henry Newman Catholic High School', location: new google.maps.LatLng(43.714309, -79.2415403)},
+{name: 'St. John Paul II Catholic Secondary School', location: new google.maps.LatLng(43.7897026, -79.1995008)},
+{name: 'St. Joseph’s College School', location: new google.maps.LatLng(43.6642104, -79.3887452)},
+{name: 'St. Joseph’s Morrow Park Catholic Secondary School', location: new google.maps.LatLng(43.7926316, -79.3940015)},
+{name: 'St. Mary Catholic Academy', location: new google.maps.LatLng(43.6580055, -79.4319491)},
+{name: 'St. Michael’s Choir School', location: new google.maps.LatLng(43.6553199, -79.3775341)},
+{name: 'St. Mother Teresa Catholic Academy', location: new google.maps.LatLng(43.8100282, -79.2143028)},
+{name: 'St. Oscar Romero Catholic Secondary School', location: new google.maps.LatLng(43.6803796, -79.4808414)},
+{name: 'St. Patrick Catholic Secondary School', location: new google.maps.LatLng(43.6781133, -79.3281601)}
+      ];
+
+      // Initialize the heatmap layer for streetcar stops
+      heatmap = new google.maps.visualization.HeatmapLayer({
+        data: streetcarStops,
+        map: map
+      });
+
+      // Set default heatmap options
+      heatmap.set('radius', 20);
+      heatmap.set('opacity', 0.6);
+
+      // Initialize markers for high schools
+      for (var i = 0; i < highSchoolLocations.length; i++) {
+        var marker = new google.maps.Marker({
+          position: highSchoolLocations[i].location,
+          map: map,
+          title: highSchoolLocations[i].name
+        });
+        highSchoolMarkers.push(marker);
+
+        // Add an info window for each marker
+        var infowindow = new google.maps.InfoWindow();
+        google.maps.event.addListener(marker, 'click', (function(marker, i) {
+          return function() {
+            infowindow.setContent(highSchoolLocations[i].name);
+            infowindow.open(map, marker);
+          }
+        })(marker, i));
+      }
+    }
+
+    // Toggle heatmap visibility
+    function toggleHeatmap() {
+      heatmap.setMap(heatmap.getMap() ? null : map);
+    }
+
+    // Toggle high school markers visibility
+    function toggleHighSchools() {
+      for (var i = 0; i < highSchoolMarkers.length; i++) {
+        if (highSchoolMarkers[i].getMap()) {
+          highSchoolMarkers[i].setMap(null);
+        } else {
+          highSchoolMarkers[i].setMap(map);
+        }
+      }
+    }
+
+    // Change heatmap gradient
+    function changeGradient() {
+      var gradient = [
+        'rgba(0, 255, 255, 0)',
+        'rgba(0, 255, 255, 1)',
+        'rgba(0, 191, 255, 1)',
+        'rgba(0, 127, 255, 1)',
+        'rgba(0, 63, 255, 1)',
+        'rgba(0, 0, 255, 1)',
+        'rgba(0, 0, 223, 1)',
+        'rgba(0, 0, 191, 1)',
+        'rgba(0, 0, 159, 1)',
+        'rgba(0, 0, 127, 1)',
+        'rgba(63, 0, 91, 1)',
+        'rgba(127, 0, 63, 1)',
+        'rgba(191, 0, 31, 1)',
+        'rgba(255, 0, 0, 1)'
+      ];
+      heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
+    }
+
+    // Change heatmap radius
+    function changeRadius() {
+      heatmap.set('radius', heatmap.get('radius') === 20 ? 50 : 20);
+    }
+
+    // Change heatmap opacity
+    function changeOpacity() {
+      heatmap.set('opacity', heatmap.get('opacity') === 0.6 ? 0.3 : 0.6);
+    }
+  </script>
+</head>
+<body onload="initMap()">
+  <div id="map" style="height: 600px; width: 100%;"></div>
+
+  <!-- Buttons to control the heatmap and markers -->
+  <div style="padding: 10px;">
+    <button onclick="toggleHeatmap()">Toggle Streetcar Stops Heatmap</button>
+    <button onclick="toggleHighSchools()">Toggle High School Markers</button>
+    <button onclick="changeGradient()">Change Gradient</button>
+    <button onclick="changeRadius()">Change Radius</button>
+    <button onclick="changeOpacity()">Change Opacity</button>
+  </div>
+</body>
+</html>
